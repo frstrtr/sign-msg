@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+# -*- mode: python -*-
+import bitcoin
+import base58
+import argparse
+import hashlib
+import codecs
+import __builtin__
+
+parser = argparse.ArgumentParser(description='A tool for signing messages with a bitcoin private key.',
+                                 epilog='You can verify the output with something like \'https://tools.bitcoin.com/verifier.html\'.')
+message = parser.add_mutually_exclusive_group(required=True)
+message.add_argument('-m', '--msg', help='The message you want to sign.')
+message.add_argument('-f', '--file', help='A file who\'s content you want to sign.')
+parser.add_argument('-p', '--privkey', help='The base58 encoded private key for signing.', required=True)
+parser.add_argument('-F', '--full', help='Prints out something that looks more.. full?', action='store_true', default=False)
+
+
+def H(x):
+    """Because who wants to write out hashlib.sha256(x).digest() all the time???"""
+    return hashlib.sha256(x).digest()
+
+
+def hex(x):
+    """hex without the frills."""
+    return __builtin__.hex(x).lstrip('0x').rstrip('L')
+
+
+def decode_privkey(p):
+    """Takes a WIF encoded private key, verifies it's checksum and that it's for the mainnet, and returns the decoded key."""
+    priv_plus_check = codecs.decode(hex(base58.b58decode(p)), 'hex')
+    checksum = priv_plus_check[-4:]
+    assert H(H(priv_plus_check[:-4]))[:4] == checksum
+    assert priv_plus_check[:1] == b'\x80'
+    return priv_plus_check[1:-4]
+
+
+def main():
+    """Sign some messages!!!"""
+    args = parser.parse_args()
+    privkey = decode_privkey(args.privkey)
+    
+    if args.msg:
+        msg = args.msg
+    elif args.file:
+        with open(arg.file) as f:
+            msg = f.read()
+    else:
+        print('Must specify -m or -f')
+        return 1
+
+    if args.full:
+        print('-----BEGIN BITCOIN SIGNED MESSAGE-----')
+        print(msg)
+        print('-----BEGIN BITCOIN SIGNATURE-----')
+
+    print(bitcoin.ecdsa_sign(msg, privkey))
+
+    if args.full:
+        print('-----END BITCOIN SIGNATURE-----')
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
