@@ -31,3 +31,13 @@ source bin/activate # activate the virtualenv
 pip install -r requirements.txt # install the dependency (only do this the first time!)
 ./sign-msg ...
 ```
+# UPDATE
+It turns out that the dependcy comes with a command line tool to do this, so just use this instead:
+```
+git clone https://github.com/vbuterin/pybitcointools.git
+virtualenv --python=python2 pybitcointools
+cd pybitcointools
+source bin/activate
+python setup.py install
+pybtctool ecdsa_sign "message" privkey
+```
