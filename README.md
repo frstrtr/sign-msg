@@ -32,7 +32,7 @@ pip install -r requirements.txt # install the dependency (only do this the first
 ./sign-msg ...
 ```
 # UPDATE
-It turns out that the dependcy comes with a command line tool to do this, so just use this instead:
+It turns out that the dependency comes with a command line tool to do this, so just use that instead:
 ```
 git clone https://github.com/vbuterin/pybitcointools.git
 virtualenv --python=python2 pybitcointools
