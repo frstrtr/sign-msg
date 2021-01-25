@@ -8,7 +8,7 @@ import codecs
 import __builtin__
 
 parser = argparse.ArgumentParser(description='A tool for signing messages with a bitcoin private key.',
-                                 epilog='You can verify the output with something like \'https://tools.bitcoin.com/verifier.html\'.')
+                                 epilog='You can verify the output with something like \'https://tools.bitcoin.com/verify-message/\'.')
 message = parser.add_mutually_exclusive_group(required=True)
 message.add_argument('-m', '--msg', help='The message you want to sign.')
 message.add_argument('-f', '--file', help='A file who\'s content you want to sign.')
